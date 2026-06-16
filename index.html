@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>uOttawa MechEng Schedule & Roadmap Dashboard</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Reset & CSS variables */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    
+    :root {
+      --bg-dark: #0f172a;
+      --bg-card: rgba(30, 41, 59, 0.7);
+      --bg-card-hover: rgba(30, 41, 59, 0.95);
+      --border-color: rgba(255, 255, 255, 0.08);
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      
+      --primary: #6366f1; /* Violet */
+      --primary-glow: rgba(99, 102, 241, 0.15);
+      
+      /* Course Category Colors */
+      --color-math: #a855f7;       /* Purple */
+      --color-thermo: #f97316;     /* Orange */
+      --color-materials: #06b6d4;  /* Cyan */
+      --color-coding: #10b981;     /* Emerald */
+      --color-design: #3b82f6;     /* Blue */
+      --color-circuits: #ec4899;   /* Pink */
+      --color-elective: #e2e8f0;   /* Light slate */
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      overflow-x: hidden;
+      min-height: 100vh;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.05) 0%, transparent 40%);
+    }
+
+    /* Layout structure */
+    .dashboard-container {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100vh;
+    }
+
+    /* Sidebar styles */
+    aside {
+      background-color: rgba(15, 23, 42, 0.95);
+      border-right: 1px solid var(--border-color);
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary), var(--color-math));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: white;
+      font-size: 1.25rem;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    }
+
+    .logo-text h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-text p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Navigation Links */
+    .nav-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex-grow: 1;
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.85rem 1rem;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-align: left;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      background-color: rgba(255, 255, 255, 0.03);
+      color: var(--text-main);
+    }
+
+    .nav-btn.active {
+      background-color: var(--primary-glow);
+      color: var(--primary);
+      box-shadow: inset 0 0 0 1px rgba(99, 102, 241, 0.2);
+    }
+
+    .nav-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    /* Stats inside sidebar */
+    .sidebar-stats {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+    }
+
+    .stat-val {
+      font-weight: 700;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 39%; /* Calculated progress: 18 completed / 46 total */
+      background: linear-gradient(90deg, var(--primary), var(--color-math));
+      border-radius: 3px;
+    }
+
+    /* Main Content Area */
+    main {
+      padding: 2.5rem;
+      overflow-y: auto;
+      max-height: 100vh;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    header {
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .header-title h2 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.25rem;
+    }
+
+    .header-title p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Dropdown/Toggle styles */
+    .schedule-controls {
+      display: flex;
+      gap: 0.75rem;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.35rem;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+    }
+
+    .control-btn {
+      padding: 0.5rem 1.25rem;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.85rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .control-btn.active {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Calendar styles */
+    .calendar-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 1.5rem;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: 80px repeat(5, 1fr);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(15, 23, 42, 0.3);
+    }
+
+    .grid-header {
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.01);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      border-right: 1px solid rgba(255, 255, 255, 0.04);
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .grid-header:last-child {
+      border-right: none;
+    }
+
+    .time-col {
+      grid-column: 1;
+      display: grid;
+      grid-template-rows: repeat(14, 60px);
+      background: rgba(255, 255, 255, 0.01);
+      border-right: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .time-slot {
+      height: 60px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .day-col {
+      display: grid;
+      grid-template-rows: repeat(14, 60px);
+      border-right: 1px solid rgba(255, 255, 255, 0.02);
+      position: relative;
+    }
+
+    .day-col:last-child {
+      border-right: none;
+    }
+
+    /* Calendar Events styling */
+    .calendar-event {
+      position: absolute;
+      left: 6px;
+      right: 6px;
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-left: 4px solid currentColor;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+      z-index: 2;
+    }
+
+    .calendar-event:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+      z-index: 10;
+    }
+
+    .event-code {
+      font-weight: 800;
+      font-size: 0.8rem;
+    }
+
+    .event-type-sec {
+      font-weight: 500;
+      opacity: 0.8;
+      margin-bottom: 0.15rem;
+    }
+
+    .event-room {
+      margin-top: auto;
+      font-weight: 600;
+      opacity: 0.9;
+      font-size: 0.68rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    /* Course detail view modal or side box */
+    .details-sidebar {
+      margin-top: 1.5rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.25rem;
+      display: none;
+    }
+
+    .details-sidebar.active {
+      display: block;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+
+    /* Roadmap grid */
+    .roadmap-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+      position: relative;
+    }
+
+    .roadmap-timeline::before {
+      content: '';
+      position: absolute;
+      left: 140px;
+      top: 2rem;
+      bottom: 2rem;
+      width: 2px;
+      background: rgba(255, 255, 255, 0.05);
+      z-index: 0;
+    }
+
+    .roadmap-year {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .year-label {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding-top: 0.5rem;
+    }
+
+    .year-label h3 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+
+    .year-label span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .roadmap-semesters {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .semester-block {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.25rem;
+      transition: border-color 0.2s ease;
+    }
+
+    .semester-block:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .semester-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .semester-title span.status {
+      font-size: 0.72rem;
+      padding: 0.25rem 0.6rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .semester-title span.status.completed {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--color-coding);
+    }
+
+    .semester-title span.status.current {
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--color-design);
+    }
+
+    .semester-courses {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .course-pill {
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .course-pill:hover {
+      background: rgba(255, 255, 255, 0.04);
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .course-pill.active-prereq {
+      box-shadow: 0 0 12px currentColor;
+    }
+
+    .course-pill .pill-code {
+      font-weight: 800;
+      letter-spacing: 0.2px;
+    }
+
+    .course-pill .pill-name {
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 0.72rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .course-pill .pill-badge {
+      font-size: 0.65rem;
+      margin-top: 0.25rem;
+      opacity: 0.8;
+    }
+
+    /* Course category styles */
+    .cat-math { border-left: 3px solid var(--color-math); color: var(--color-math); }
+    .cat-thermo { border-left: 3px solid var(--color-thermo); color: var(--color-thermo); }
+    .cat-materials { border-left: 3px solid var(--color-materials); color: var(--color-materials); }
+    .cat-coding { border-left: 3px solid var(--color-coding); color: var(--color-coding); }
+    .cat-design { border-left: 3px solid var(--color-design); color: var(--color-design); }
+    .cat-circuits { border-left: 3px solid var(--color-circuits); color: var(--color-circuits); }
+    .cat-elective { border-left: 3px solid var(--text-muted); color: var(--text-muted); }
+
+    /* Category backgrounds for Calendar Blocks */
+    .bg-math { background-color: rgba(168, 85, 247, 0.1); color: var(--color-math); }
+    .bg-thermo { background-color: rgba(249, 115, 22, 0.1); color: var(--color-thermo); }
+    .bg-materials { background-color: rgba(6, 182, 212, 0.1); color: var(--color-materials); }
+    .bg-coding { background-color: rgba(16, 181, 129, 0.1); color: var(--color-coding); }
+    .bg-design { background-color: rgba(59, 130, 246, 0.1); color: var(--color-design); }
+    .bg-circuits { background-color: rgba(236, 72, 153, 0.1); color: var(--color-circuits); }
+    .bg-elective { background-color: rgba(148, 163, 184, 0.10); color: var(--text-muted); }
+
+    /* Context Copier Styles */
+    .copier-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .copier-box {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 1.25rem;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.85rem;
+      color: #38bdf8;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    .copy-btn {
+      align-self: flex-start;
+      background: linear-gradient(135deg, var(--primary), var(--color-math));
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+      transition: all 0.2s ease;
+    }
+
+    .copy-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+    }
+
+    /* Tooltip details */
+    .tooltip-content {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+
+    .detail-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.75rem;
+    }
+
+    .detail-item-title {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 0.25rem;
+    }
+
+    .detail-item-val {
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dashboard-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside>
+      <div class="logo-container">
+        <div class="logo-icon">ME</div>
+        <div class="logo-text">
+          <h1>uOttawa MechEng</h1>
+          <p>Academic Dashboard</p>
+        </div>
+      </div>
+      
+      <div class="nav-links">
+        <button class="nav-btn active" onclick="switchTab('weekly-schedule')">
+          <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
+          Weekly Schedule
+        </button>
+        <button class="nav-btn" onclick="switchTab('degree-roadmap')">
+          <svg viewBox="0 0 24 24"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 5c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 5h16v11H4V5z"/></svg>
+          4.5-Year Roadmap
+        </button>
+        <button class="nav-btn" onclick="switchTab('context-copier')">
+          <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+          Antigravity Prompt
+        </button>
+      </div>
+
+      <div class="sidebar-stats">
+        <div class="stat-row">
+          <span class="stat-label">Graduation Goal</span>
+          <span class="stat-val">Dec 2029</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Progress</span>
+          <span class="stat-val">18 / 46 Classes</span>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar"></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main>
+      
+      <!-- TAB 1: Weekly Schedule -->
+      <section id="weekly-schedule" class="tab-content active">
+        <header>
+          <div class="header-title">
+            <h2>Weekly Schedule</h2>
+            <p>Conflict-free calendar generated for your upcoming 2nd-year terms</p>
+          </div>
+          <div class="schedule-controls">
+            <button class="control-btn active" id="term-btn-fall" onclick="switchTerm('fall')">Fall 2026</button>
+            <button class="control-btn" id="term-btn-winter" onclick="switchTerm('winter')">Winter 2027</button>
+          </div>
+        </header>
+
+        <div class="calendar-card">
+          <div class="calendar-grid">
+            <!-- Headers -->
+            <div class="grid-header" style="background: none;">Time</div>
+            <div class="grid-header">Monday</div>
+            <div class="grid-header">Tuesday</div>
+            <div class="grid-header">Wednesday</div>
+            <div class="grid-header">Thursday</div>
+            <div class="grid-header">Friday</div>
+            
+            <!-- Time Column -->
+            <div class="time-col">
+              <div class="time-slot">8:30 AM</div>
+              <div class="time-slot">9:30 AM</div>
+              <div class="time-slot">10:30 AM</div>
+              <div class="time-slot">11:30 AM</div>
+              <div class="time-slot">12:30 PM</div>
+              <div class="time-slot">1:30 PM</div>
+              <div class="time-slot">2:30 PM</div>
+              <div class="time-slot">3:30 PM</div>
+              <div class="time-slot">4:30 PM</div>
+              <div class="time-slot">5:30 PM</div>
+              <div class="time-slot">6:30 PM</div>
+              <div class="time-slot">7:30 PM</div>
+              <div class="time-slot">8:30 PM</div>
+              <div class="time-slot">9:30 PM</div>
+            </div>
+
+            <!-- Day Columns -->
+            <div class="day-col" id="col-monday"></div>
+            <div class="day-col" id="col-tuesday"></div>
+            <div class="day-col" id="col-wednesday"></div>
+            <div class="day-col" id="col-thursday"></div>
+            <div class="day-col" id="col-friday"></div>
+          </div>
+        </div>
+
+        <!-- Detail Card -->
+        <div class="details-sidebar" id="class-detail-card">
+          <h3 id="detail-title" style="font-size: 1.25rem; font-weight: 800; margin-bottom: 0.50rem;">Course Details</h3>
+          <p id="detail-description" style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5;"></p>
+          <div class="tooltip-content">
+            <div class="detail-item">
+              <div class="detail-item-title">Component & Section</div>
+              <div class="detail-item-val" id="detail-sec">-</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-item-title">Timeslots</div>
+              <div class="detail-item-val" id="detail-times">-</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-item-title">Room Location</div>
+              <div class="detail-item-val" id="detail-room">-</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-item-title">Instructor</div>
+              <div class="detail-item-val" id="detail-instructor">-</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: 4.5-Year Roadmap -->
+      <section id="degree-roadmap" class="tab-content">
+        <header>
+          <div class="header-title">
+            <h2>4.5-Year Degree Roadmap</h2>
+            <p>Your step-by-step pathway to graduation with all prerequisites solved</p>
+          </div>
+        </header>
+
+        <div class="roadmap-timeline">
+          
+          <!-- Year 1 -->
+          <div class="roadmap-year">
+            <div class="year-label">
+              <h3>Year 1</h3>
+              <span>2025 - 2026</span>
+            </div>
+            <div class="roadmap-semesters">
+              <div class="semester-block">
+                <div class="semester-title">First Semesters (Fall & Winter) <span class="status completed">Completed</span></div>
+                <div class="semester-courses">
+                  <div class="course-pill cat-coding"><span class="pill-code">GNG 1103</span><span class="pill-name">Engineering Design</span></div>
+                  <div class="course-pill cat-elective"><span class="pill-code">CHM 1311</span><span class="pill-name">Principles of Chemistry</span></div>
+                  <div class="course-pill cat-thermo"><span class="pill-code">GNG 1105</span><span class="pill-name">Engineering Mechanics</span></div>
+                  <div class="course-pill cat-math"><span class="pill-code">MAT 1320</span><span class="pill-name">Calculus I</span></div>
+                  <div class="course-pill cat-elective"><span class="pill-code">ENG 1112</span><span class="pill-name">Technical Report Writing</span></div>
+                  <div class="course-pill cat-design"><span class="pill-code">MCG 1101</span><span class="pill-name">Intro Mech Eng</span></div>
+                  <div class="course-pill cat-design"><span class="pill-code">MCG 1102</span><span class="pill-name">Mechanical Drafting</span></div>
+                  <div class="course-pill cat-materials"><span class="pill-code">PHY 1122</span><span class="pill-name">Fundamentals of Physics II</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Year 2 -->
+          <div class="roadmap-year">
+            <div class="year-label">
+              <h3>Year 2</h3>
+              <span>2026 - 2027</span>
+            </div>
+            <div class="roadmap-semesters">
+              <!-- Fall -->
+              <div class="semester-block">
+                <div class="semester-title">Fall 2026 <span class="status current">Enrolled</span></div>
+                <div class="semester-courses">
+                  <div class="course-pill cat-coding" onclick="showCourse('GNG1106')"><span class="pill-code">GNG 1106</span><span class="pill-name">Engineering Computation</span><span class="pill-badge" style="color: var(--color-coding)">★ RETAKE</span></div>
+                  <div class="course-pill cat-math" onclick="showCourse('MAT1341')"><span class="pill-code">MAT 1341</span><span class="pill-name">Linear Algebra</span><span class="pill-badge" style="color: var(--color-math)">★ RETAKE</span></div>
+                  <div class="course-pill cat-coding" onclick="showCourse('GNG2101')"><span class="pill-code">GNG 2101</span><span class="pill-name">Product Development</span></div>
+                  <div class="course-pill cat-thermo" onclick="showCourse('MCG2130')"><span class="pill-code">MCG 2130</span><span class="pill-name">Thermodynamics I</span></div>
+                  <div class="course-pill cat-materials" onclick="showCourse('MCG2360')"><span class="pill-code">MCG 2360</span><span class="pill-name">Engineering Materials I</span></div>
+                </div>
+              </div>
+              <!-- Winter -->
+              <div class="semester-block">
+                <div class="semester-title">Winter 2027 <span class="status current">Selected</span></div>
+                <div class="semester-courses">
+                  <div class="course-pill cat-math" onclick="showCourse('MAT1322')"><span class="pill-code">MAT 1322</span><span class="pill-name">Calculus II</span><span class="pill-badge" style="color: var(--color-math)">★ RETAKE</span></div>
+                  <div class="course-pill cat-materials" onclick="showCourse('CVG2140')"><span class="pill-code">CVG 2140</span><span class="pill-name">Mechanics of Materials I</span></div>
+                  <div class="course-pill cat-design" onclick="showCourse('MCG2101')"><span class="pill-code">MCG 2101</span><span class="pill-name">Mechanical Design</span></div>
+                  <div class="course-pill cat-thermo" onclick="showCourse('MCG2131')"><span class="pill-code">MCG 2131</span><span class="pill-name">Thermodynamics II</span></div>
+                  <div class="course-pill cat-elective"><span class="pill-code">ELECTIVE</span><span class="pill-name">Complementary Elective</span></div>
+                </div>
+              </div>
+              <!-- Summer -->
+              <div class="semester-block">
+                <div class="semester-title">Summer 2027 <span class="status">Planned</span></div>
+                <div class="semester-courses">
+                  <div class="course-pill cat-math" onclick="showCourse('MAT2384')"><span class="pill-code">MAT 2384</span><span class="pill-name">ODEs & Numerical Methods</span><span class="pill-badge">★ Summer Catch-up</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Year 3 -->
+          <div class="roadmap-year">
+            <div class="year-label">
+              <h3>Year 3</h3>
+              <span>2027 - 2028</span>
+            </div>
+            <div class="roadmap-semesters">
+              <!-- Fall -->
+              <div class="semester-block">
+                <div class="semester-title">Fall 2027 <span class="status">Planned</span></div>
+                <div class="semester-courses">
+                  <div class="course-pill cat-math" onclick="showCourse('MAT2322')"><span class="pill-code">MAT 2322</span><span class="pill-name">Calculus III</span></div>
+                  <div class="course-pill cat-thermo" onclick="showCourse('MCG2108')"><span class="pill-code">MCG 2108</span><span class="pill-name">Dynamics</span></div>
+                  <div class="course-pill cat-circuits" onclick="showCourse('ELG2336')"><span class="pill-code">ELG 2336</span><span class="pill-name">Circuits & Machines</span></div>
+                  <div class="course-pill cat-math" onclick="showCourse('STA2391')"><span class="pill-code">STA 2391</span><span class="pill-name">Probability & Stats</span></div>
+                  <div class="course-pill cat-elective" onclick="showCourse('GNG4170')"><span class="pill-code">GNG 4170</span><span class="pill-name">Engineering Law</span></div>
+                </div>
+              </div>
+              <!-- Winter -->
+              <div class="semester-block">
+                <div class="semester-title">Winter 2028 <span class="status">Planned</span></div>
+                <div class="semester-courses">
+                  <div class="course-pill cat-thermo" onclick="showCourse('MCG3340')"><span class="pill-code">MCG 3340</span><span class="pill-name">Fluid Mechanics I</span></div>
+                  <div class="course-pill cat-design" onclick="showCourse('MCG3306')"><span class="pill-code">MCG 3306</span><span class="pill-name">System Dynamics</span></div>
+                  <div class="course-pill cat-materials" onclick="showCourse('MCG3145')"><span class="pill-code">MCG 3145</span><span class="pill-name">Adv. Strength of Materials</span></div>
+                  <div class="course-pill cat-thermo" onclick="showCourse('MCG3130')"><span class="pill-code">MCG 3130</span><span class="pill-name">Dynamics of Machinery</span></div>
+                  <div class="course-pill cat-materials" onclick="showCourse('MCG2361')"><span class="pill-code">MCG 2361</span><span class="pill-name">Engineering Materials II</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Year 4 -->
+          <div class="roadmap-year">
+            <div class="year-label">
+              <h3>Year 4</h3>
+              <span>2028 - 2029</span>
+            </div>
+            <div class="roadmap-semesters">
+              <!-- Fall -->
+              <div class="semester-block">
+                <div class="semester-title">Fall 2028 <span class="status">Planned</span></div>
+                <div class="semester-courses">
+                  <div class="course-pill cat-design" onclick="showCourse('MCG4322')"><span class="pill-code">MCG 43221</span><span class="pill-name">Capstone Project (Part 1)</span></div>
+                  <div class="course-pill cat-thermo" onclick="showCourse('MCG3110')"><span class="pill-code">MCG 3110</span><span class="pill-name">Heat Transfer</span></div>
+                  <div class="course-pill cat-thermo" onclick="showCourse('MCG3341')"><span class="pill-code">MCG 3341</span><span class="pill-name">Fluid Mechanics II</span></div>
+                  <div class="course-pill cat-design" onclick="showCourse('MCG3307')"><span class="pill-code">MCG 3307</span><span class="pill-name">Control Systems</span></div>
+                  <div class="course-pill cat-math" onclick="showCourse('MAT3320')"><span class="pill-code">MAT 3320</span><span class="pill-name">Math for Engineers</span></div>
+                </div>
+              </div>
+              <!-- Winter -->
+              <div class="semester-block">
+                <div class="semester-title">Winter 2029 <span class="status">Planned</span></div>
+                <div class="semester-courses">
+                  <div class="course-pill cat-design" onclick="showCourse('MCG4322')"><span class="pill-code">MCG 43222</span><span class="pill-name">Capstone Project (Part 2)</span></div>
+                  <div class="course-pill cat-design" onclick="showCourse('MCG3131')"><span class="pill-code">MCG 3131</span><span class="pill-name">Machine Design</span></div>
+                  <div class="course-pill cat-thermo" onclick="showCourse('MCG4308')"><span class="pill-code">MCG 4308</span><span class="pill-name">Mechanical Vibrations</span></div>
+                  <div class="course-pill cat-design" onclick="showCourse('MCG4340')"><span class="pill-code">MCG 4340</span><span class="pill-name">Mechanical Eng Lab</span></div>
+                  <div class="course-pill cat-circuits" onclick="showCourse('ELG3336')"><span class="pill-code">ELG 3336</span><span class="pill-name">Electronics for MechEng</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Year 5 -->
+          <div class="roadmap-year">
+            <div class="year-label">
+              <h3>Year 5</h3>
+              <span>Fall 2029</span>
+            </div>
+            <div class="roadmap-semesters">
+              <div class="semester-block">
+                <div class="semester-title">Fall 2029 <span class="status">Graduation</span></div>
+                <div class="semester-courses">
+                  <div class="course-pill cat-design" onclick="showCourse('MCG4328')"><span class="pill-code">MCG 4328</span><span class="pill-name">Manufacturing</span></div>
+                  <div class="course-pill cat-elective"><span class="pill-code">TECH ELEC</span><span class="pill-name">Technical Elective 1</span></div>
+                  <div class="course-pill cat-elective"><span class="pill-code">TECH ELEC</span><span class="pill-name">Technical Elective 2</span></div>
+                  <div class="course-pill cat-elective"><span class="pill-code">TECH ELEC</span><span class="pill-name">Technical Elective 3</span></div>
+                  <div class="course-pill cat-elective"><span class="pill-code">SCI ELEC</span><span class="pill-name">Science Elective</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- TAB 3: Prompt Copier -->
+      <section id="context-copier" class="tab-content">
+        <header>
+          <div class="header-title">
+            <h2>Antigravity Context Copier</h2>
+            <p>Use this prompt to quickly onboarding Antigravity in future sessions</p>
+          </div>
+        </header>
+
+        <div class="copier-card">
+          <button class="copy-btn" onclick="copyPrompt()">
+            <svg style="width: 18px; height: 18px;" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1 0 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" fill="white"/></svg>
+            Copy Prompt to Clipboard
+          </button>
+          <div class="copier-box" id="prompt-box"># Antigravity Onboarding Prompt: uOttawa Mechanical Engineering 4.5-Year Plan
+
+Program: BASc in Mechanical Engineering (English Stream) at uOttawa.
+Failed Prereqs: MAT 1341, MAT 1322, GNG 1106. Passed: GNG 1105.
+Plan: Max 5 courses/semester, no morning classes. 4.5-year graduation in Fall 2029.
+
+Registered Sections Fall 2026:
+- GNG 1106-B00 / LAB B02
+- MAT 1341-B00 / DGD B02
+- GNG 2101-C00 / LAB C01
+- MCG 2130-A00 / TUT A01
+- MCG 2360-A00 / TUT A02
+
+Selected Sections Winter 2027:
+- MAT 1322-C00 / DGD C03
+- CVG 2140-A00 / TUT A01
+- MCG 2101-A00 / LAB A02
+- MCG 2131-A00 / LAB A01 / TUT A02
+- Complementary Elective 1
+
+Planned Roadmap:
+- Summer 2027: MAT 2384
+- Year 3 Fall: MAT 2322, MCG 2108, ELG 2336, STA 2391, GNG 4170
+- Year 3 Winter: MCG 3340, MCG 3306, MCG 3145, MCG 3130, MCG 2361
+- Year 4 Fall: MCG 43221, MCG 3110, MCG 3341, MCG 3307, MAT 3320
+- Year 4 Winter: MCG 43222, MCG 3131, MCG 4308, MCG 4340, ELG 3336
+- Year 5 Fall (Graduation): MCG 4328, Tech Elective 1, Tech Elective 2, Tech Elective 3, Science Elective</div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <script>
+    // Data definition for schedules and details
+    const scheduleData = {
+      fall: [
+        // Monday
+        { course: 'MCG 2360', type: 'LEC', section: 'A00', day: 'monday', start: '14:30', end: '15:50', room: 'MNT 203', instructor: 'J. Smith', color: 'materials' },
+        { course: 'GNG 1106', type: 'LEC', section: 'B00', day: 'monday', start: '16:00', end: '17:20', room: 'STE G0103', instructor: 'Yongyi Mao', color: 'coding' },
+        { course: 'MCG 2130', type: 'LEC', section: 'A00', day: 'monday', start: '17:30', end: '18:50', room: 'MRT 205', instructor: 'H. Cho', color: 'thermo' },
+        // Tuesday
+        { course: 'GNG 1106', type: 'LAB', section: 'B02', day: 'tuesday', start: '10:00', end: '12:50', room: 'STE J0106', instructor: 'Yongyi Mao', color: 'coding' },
+        { course: 'GNG 2101', type: 'LEC', section: 'C00', day: 'tuesday', start: '14:30', end: '15:50', room: 'CBY C011', instructor: 'F. Robitaille', color: 'coding' },
+        { course: 'MAT 1341', type: 'DGD', section: 'B02', day: 'tuesday', start: '16:00', end: '17:20', room: 'LMX 219', instructor: 'To Be Announced', color: 'math' },
+        { course: 'GNG 2101', type: 'LAB', section: 'C01', day: 'tuesday', start: '19:00', end: '21:50', room: 'CBY B206', instructor: 'F. Robitaille', color: 'coding' },
+        // Wednesday
+        { course: 'MAT 1341', type: 'LEC', section: 'B00', day: 'wednesday', start: '13:00', end: '14:20', room: 'MHN 257', instructor: 'To Be Announced', color: 'math' },
+        { course: 'GNG 1106', type: 'LEC', section: 'B00', day: 'wednesday', start: '14:30', end: '15:50', room: 'STE G0103', instructor: 'Yongyi Mao', color: 'coding' },
+        { course: 'MCG 2130', type: 'LEC', section: 'A00', day: 'wednesday', start: '17:30', end: '18:50', room: 'MRT 205', instructor: 'H. Cho', color: 'thermo' },
+        { course: 'MCG 2130', type: 'TUT', section: 'A01', day: 'wednesday', start: '19:00', end: '20:50', room: 'MRT 205', instructor: 'H. Cho', color: 'thermo' },
+        // Thursday
+        { course: 'MCG 2360', type: 'LEC', section: 'A00', day: 'thursday', start: '16:00', end: '17:20', room: 'MNT 203', instructor: 'J. Smith', color: 'materials' },
+        { course: 'MCG 2360', type: 'TUT', section: 'A02', day: 'thursday', start: '19:00', end: '20:50', room: 'MNT 203', instructor: 'J. Smith', color: 'materials' },
+        // Friday
+        { course: 'MAT 1341', type: 'LEC', section: 'B00', day: 'friday', start: '11:30', end: '12:50', room: 'MHN 257', instructor: 'To Be Announced', color: 'math' },
+        { course: 'GNG 2101', type: 'LEC', section: 'C00', day: 'friday', start: '16:00', end: '17:20', room: 'CBY C011', instructor: 'F. Robitaille', color: 'coding' },
+      ],
+      winter: [
+        // Monday
+        { course: 'MAT 1322', type: 'LEC', section: 'C00', day: 'monday', start: '17:30', end: '18:50', room: 'MNT 203', instructor: 'To Be Announced', color: 'math' },
+        // Tuesday
+        { course: 'CVG 2140', type: 'LEC', section: 'A00', day: 'tuesday', start: '11:30', end: '12:50', room: 'MHN 257', instructor: 'A. Abdulridha', color: 'materials' },
+        { course: 'MCG 2101', type: 'LEC', section: 'A00', day: 'tuesday', start: '13:00', end: '14:20', room: 'STE G0103', instructor: 'F. Robitaille', color: 'design' },
+        { course: 'CVG 2140', type: 'TUT', section: 'A01', day: 'tuesday', start: '14:30', end: '15:50', room: 'STE J0106', instructor: 'A. Abdulridha', color: 'materials' },
+        { course: 'MCG 2131', type: 'LAB', section: 'A01', day: 'tuesday', start: '17:30', end: '20:20', room: 'CBY B206', instructor: 'H. Cho', color: 'thermo' },
+        // Wednesday
+        { course: 'MCG 2101', type: 'LAB', section: 'A02', day: 'wednesday', start: '10:00', end: '11:50', room: 'CBY C011', instructor: 'F. Robitaille', color: 'design' },
+        { course: 'MAT 1322', type: 'DGD', section: 'C03', day: 'wednesday', start: '13:00', end: '14:20', room: 'LMX 219', instructor: 'To Be Announced', color: 'math' },
+        { course: 'MCG 2131', type: 'LEC', section: 'A00', day: 'wednesday', start: '16:00', end: '17:20', room: 'MRT 205', instructor: 'H. Cho', color: 'thermo' },
+        { course: 'MAT 1322', type: 'LEC', section: 'C00', day: 'wednesday', start: '17:30', end: '18:50', room: 'MNT 203', instructor: 'To Be Announced', color: 'math' },
+        // Thursday
+        { course: 'MCG 2131', type: 'TUT', section: 'A02', day: 'thursday', start: '10:00', end: '11:20', room: 'HNN 013', instructor: 'H. Cho', color: 'thermo' },
+        { course: 'MCG 2101', type: 'LEC', section: 'A00', day: 'thursday', start: '11:30', end: '12:50', room: 'STE G0103', instructor: 'F. Robitaille', color: 'design' },
+        // Friday
+        { course: 'CVG 2140', type: 'LEC', section: 'A00', day: 'friday', start: '13:00', end: '14:20', room: 'MHN 257', instructor: 'A. Abdulridha', color: 'materials' },
+        { course: 'MCG 2131', type: 'LEC', section: 'A00', day: 'friday', start: '14:30', end: '15:50', room: 'CRX C442', instructor: 'H. Cho', color: 'thermo' },
+      ]
+    };
+
+    const courseCatalog = {
+      GNG1106: { title: "Fundamentals of Engineering Computation", prereq: "None", desc: "Introduction to computer programming. Control structures, arrays, data types, functions. Numerical algorithms and engineering calculations." },
+      MAT1341: { title: "Introduction to Linear Algebra", prereq: "None", desc: "Vector spaces, linear transformations, systems of linear equations, matrices, determinants, eigenvalues and eigenvectors." },
+      GNG2101: { title: "Introduction to Product Development for Engineers", prereq: "None", desc: "Product creation process, business model canvas, client requirements validation, prototyping, intellectual property, product lifecycle." },
+      MCG2130: { title: "Thermodynamics I", prereq: "CHM1311, MAT1320", desc: "Thermodynamic systems, properties of pure substances, first and second laws of thermodynamics, entropy, power cycles." },
+      MCG2360: { title: "Engineering Materials I", prereq: "CHM1311", desc: "Atomic structure, crystal structures, defects, mechanical properties, phase diagrams, heat treatments, alloys, polymers, and composites." },
+      MAT1322: { title: "Calculus II", prereq: "MAT1320", desc: "Techniques of integration, applications of integration, improper integrals, infinite sequences and series, Taylor series." },
+      CVG2140: { title: "Mechanics of Materials I", prereq: "GNG1105", desc: "Concepts of stress and strain. Axial loading, torsion of circular shafts, bending of beams, shear stresses, stress transformations, beam deflections." },
+      MCG2101: { title: "Introduction to the Design of Mechanical Systems", prereq: "MCG1102, GNG1105", desc: "Design process, machine elements (gears, shafts, bearings), linkages, material selection, mechanical drafting integration." },
+      MCG2131: { title: "Thermodynamics II", prereq: "MCG2130", desc: "Gas power cycles, vapor power cycles, refrigeration cycles, mixtures of gases, psychrometry, combustion processes." },
+      MAT2384: { title: "Ordinary Differential Equations and Numerical Methods", prereq: "MAT1322, MAT1341", desc: "First and second-order differential equations, Laplace transforms, numerical solutions of ODEs, interpolation, numerical integration." },
+      MAT2322: { title: "Calculus III for Engineers", prereq: "MAT1322", desc: "Curves and surfaces in 3D space. Partial derivatives, double and triple integrals, line and surface integrals, Green's, Stokes', and Divergence theorems." },
+      MCG2108: { title: "Dynamics", prereq: "GNG1105", desc: "Kinematics and kinetics of particles and rigid bodies. Work-energy methods, impulse-momentum methods, 2D and 3D rigid body dynamics." },
+      ELG2336: { title: "Electric Circuits and Machines", prereq: "PHY1122, MAT1322", desc: "DC and AC circuit analysis, Phasors, active/reactive power, transformers, DC motors, three-phase motors and generators." },
+      STA2391: { title: "Probability and Statistics for Engineers", prereq: "MAT1322", desc: "Probability theory, random variables, probability distributions, estimation, hypothesis testing, regression analysis." },
+      GNG4170: { title: "Engineering Law", prereq: "None", desc: "The Canadian legal system, contracts, torts, professional liability, intellectual property, environmental regulations." },
+      MCG3340: { title: "Fluid Mechanics I", prereq: "MCG2108, MCG2130, MAT2322", desc: "Fluid statics, control volume analysis, conservation laws (mass, momentum, energy), dimensional analysis, internal viscous flows." },
+      MCG3306: { title: "System Dynamics", prereq: "MCG2108, MAT2384, ELG2336", desc: "Modeling of mechanical, electrical, fluid, and thermal systems, transfer functions, state-space representations, transient response." },
+      MCG3145: { title: "Advanced Strength of Materials", prereq: "CVG2140, MAT2322", desc: "Stress transformations, Castigliano's theorem, energy methods, torsion of non-circular sections, shear center, curved beams." },
+      MCG3130: { title: "Dynamics of Machinery", prereq: "MCG2108", desc: "Kinematic and dynamic analysis of linkages, cams, and gear trains. Balancing of rotating and reciprocating masses, flywheels." },
+      MCG2361: { title: "Engineering Materials II", prereq: "MCG2360", desc: "Failure mechanisms (fatigue, creep, fracture), corrosion, degradation of materials, material selection methodologies for engineering designs." },
+      MCG4322: { title: "Mechanical Engineering Capstone Project", prereq: "MCG2131, MCG3110, MCG3131, MCG3145, MCG3341", desc: "Major team design project. Integration of conceptual design, synthesis, optimization, thermal/fluid and structural analysis, and prototyping." },
+      MCG3110: { title: "Heat Transfer", prereq: "MCG3340", desc: "Conduction (steady and transient), convection (external and internal flows), radiation heat transfer, heat exchanger analysis and design." },
+      MCG3341: { title: "Fluid Mechanics II", prereq: "MCG3340", desc: "External flows, boundary layers, drag and lift, compressible flow (shock waves), turbomachinery (pumps and turbines)." },
+      MCG3307: { title: "Control Systems", prereq: "MCG3306", desc: "Feedback control system concepts, stability analysis (Routh-Hurwitz, Nyquist), root locus design, PID controllers." },
+      MAT3320: { title: "Mathematics for Engineers III", prereq: "MAT2322, MAT2384", desc: "Series solutions of ODEs, Legendre and Bessel functions, Fourier series, boundary value problems, partial differential equations." },
+      MCG3131: { title: "Machine Design", prereq: "MCG2101, CVG2140, MCG2361", desc: "Design of shafts, gears, clutches, brakes, springs, threaded fasteners, and welded joints under static and fatigue loads." },
+      MCG4308: { title: "Mechanical Vibration Analysis", prereq: "MCG3306", desc: "Free and forced vibrations of single and multi-degree of freedom systems, modal analysis, vibration isolation, rotordynamics." },
+      MCG4340: { title: "Mechanical Engineering Laboratory", prereq: "MCG3340, MCG3110, MCG3307", desc: "Experimental investigations in fluid mechanics, heat transfer, solid mechanics, dynamics, and control systems. Instrumentation and data analysis." },
+      ELG3336: { title: "Electronics for Mechanical Engineers", prereq: "ELG2336", desc: "Operational amplifiers, diodes, transistors, analog-to-digital converters, microcontrollers, and sensor interfacing." },
+      MCG4328: { title: "Manufacturing", prereq: "MCG3131, MCG2361", desc: "Metal casting, forming, machining, welding, additive manufacturing, metrology, automation, and computer-aided manufacturing (CAM)." }
+    };
+
+    let currentTerm = 'fall';
+
+    // Tab switching logic
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.getElementById(tabId).classList.add('active');
+      event.currentTarget.classList.add('active');
+    }
+
+    // Term switching logic for calendar
+    function switchTerm(term) {
+      currentTerm = term;
+      document.getElementById('term-btn-fall').classList.toggle('active', term === 'fall');
+      document.getElementById('term-btn-winter').classList.toggle('active', term === 'winter');
+      renderCalendar();
+    }
+
+    // Convert time string to minutes from 08:30
+    function timeToPercent(timeStr) {
+      const parts = timeStr.split(':');
+      const minutes = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+      const startMin = 8 * 60 + 30; // 08:30 is 0px top
+      const slotHeight = 60; // 60px per hour
+      return ((minutes - startMin) / 60) * slotHeight;
+    }
+
+    function timeDurationToHeight(startStr, endStr) {
+      const startParts = startStr.split(':');
+      const endParts = endStr.split(':');
+      const startMin = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
+      const endMin = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
+      const slotHeight = 60;
+      return ((endMin - startMin) / 60) * slotHeight;
+    }
+
+    // Render Calendar blocks
+    function renderCalendar() {
+      // Clear columns
+      const cols = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+      cols.forEach(c => {
+        document.getElementById('col-' + c).innerHTML = '';
+      });
+
+      const events = scheduleData[currentTerm];
+      events.forEach(evt => {
+        const colEl = document.getElementById('col-' + evt.day);
+        if (colEl) {
+          const topPx = timeToPercent(evt.start);
+          const heightPx = timeDurationToHeight(evt.start, evt.end);
+          
+          const evtEl = document.createElement('div');
+          evtEl.className = `calendar-event bg-${evt.color}`;
+          evtEl.style.top = `${topPx}px`;
+          evtEl.style.height = `${heightPx}px`;
+          
+          evtEl.innerHTML = `
+            <div class="event-code">${evt.course}</div>
+            <div class="event-type-sec">${evt.type} ${evt.section}</div>
+            <div class="event-room">
+              <svg style="width: 10px; height: 10px;" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/></svg>
+              ${evt.room}
+            </div>
+          `;
+          
+          evtEl.onclick = () => showEventDetails(evt);
+          colEl.appendChild(evtEl);
+        }
+      });
+    }
+
+    // Helper to format 24h string (e.g. "14:30") to 12h AM/PM (e.g. "2:30 PM")
+    function formatTime12Hr(time24) {
+      if (!time24 || !time24.includes(':')) return time24;
+      const parts = time24.split(':');
+      let hours = parseInt(parts[0]);
+      const minutes = parts[1];
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12; // '0' should be '12'
+      return `${hours}:${minutes} ${ampm}`;
+    }
+
+    // Show details of clicked calendar event
+    function showEventDetails(evt) {
+      const card = document.getElementById('class-detail-card');
+      card.classList.add('active');
+      
+      const details = courseCatalog[evt.course.replace(' ', '')] || { title: evt.course, prereq: 'None', desc: 'No details available.' };
+      
+      document.getElementById('detail-title').innerText = `${evt.course}: ${details.title}`;
+      document.getElementById('detail-description').innerText = details.desc;
+      document.getElementById('detail-sec').innerText = `${evt.type} ${evt.section}`;
+      document.getElementById('detail-times').innerText = `${evt.day.charAt(0).toUpperCase() + evt.day.slice(1)} ${formatTime12Hr(evt.start)} - ${formatTime12Hr(evt.end)}`;
+      document.getElementById('detail-room').innerText = evt.room;
+      document.getElementById('detail-instructor').innerText = evt.instructor;
+      
+      card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Show details from Roadmap Course Pill click
+    function showCourse(code) {
+      const cleanCode = code.replace(' ', '');
+      const details = courseCatalog[cleanCode];
+      if (!details) return;
+
+      const card = document.getElementById('class-detail-card');
+      card.classList.add('active');
+      switchTab('weekly-schedule'); // Jump back to calendar/detail tab
+
+      document.getElementById('detail-title').innerText = `${code}: ${details.title}`;
+      document.getElementById('detail-description').innerText = `${details.desc}\n\nPrerequisites: ${details.prereq}`;
+      document.getElementById('detail-sec').innerText = 'Roadmap Course';
+      document.getElementById('detail-times').innerText = 'Varies by Section';
+      document.getElementById('detail-room').innerText = 'Refer to timetable';
+      document.getElementById('detail-instructor').innerText = 'To Be Determined';
+
+      // Highlight matching prerequisite paths (visual indicator on pills)
+      document.querySelectorAll('.course-pill').forEach(pill => {
+        pill.classList.remove('active-prereq');
+        const pillText = pill.querySelector('.pill-code').innerText.replace(' ', '');
+        if (details.prereq.includes(pillText)) {
+          pill.classList.add('active-prereq');
+        }
+      });
+    }
+
+    // Prompt Copy function
+    function copyPrompt() {
+      const text = document.getElementById('prompt-box').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Prompt copied to clipboard successfully! You can paste it into a new Antigravity session.');
+      });
+    }
+
+    // Init
+    window.onload = () => {
+      renderCalendar();
+    };
+  </script>
+</body>
+</html>
