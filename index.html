@@ -612,6 +612,119 @@
       font-size: 0.85rem;
       font-weight: 700;
     }
+
+    /* Responsive styles */
+    @media (max-width: 900px) {
+      .dashboard-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        min-height: 100vh;
+      }
+      
+      aside {
+        height: auto;
+        position: relative;
+        padding: 1.25rem;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+        top: 0;
+      }
+
+      .logo-container {
+        margin-bottom: 0;
+      }
+
+      .nav-links {
+        flex-direction: row;
+        gap: 0.25rem;
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+        margin-top: 0.5rem;
+        order: 3;
+      }
+
+      .nav-btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+        white-space: nowrap;
+        justify-content: center;
+        flex-grow: 1;
+      }
+
+      .sidebar-stats {
+        width: auto;
+        flex-grow: 0;
+        margin-top: 0;
+        padding: 0.5rem 1rem;
+        flex-direction: row;
+        gap: 1.5rem;
+        align-items: center;
+      }
+
+      .sidebar-stats .progress-bar-container {
+        display: none; /* Hide progress bar on compact sidebar stats */
+      }
+
+      main {
+        padding: 1.25rem;
+        max-height: none;
+      }
+
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+
+      .schedule-controls {
+        width: 100%;
+      }
+
+      .control-btn {
+        flex: 1;
+        text-align: center;
+      }
+      
+      /* Calendar responsiveness via horizontal scroll */
+      .calendar-card {
+        padding: 0.75rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .calendar-grid {
+        min-width: 750px;
+      }
+
+      /* Roadmap mobile layout */
+      .roadmap-timeline::before {
+        left: 20px;
+      }
+      
+      .roadmap-year {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .year-label {
+        flex-direction: row;
+        align-items: baseline;
+        gap: 0.5rem;
+        padding-left: 2.5rem;
+      }
+      
+      .roadmap-semesters {
+        padding-left: 2.5rem;
+      }
+
+      .semester-courses {
+        grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+      }
+    }
   </style>
 </head>
 <body>
