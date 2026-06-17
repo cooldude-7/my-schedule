@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="study_data.js"></script>
   
   <style>
     /* Reset & CSS variables */
@@ -725,6 +726,157 @@
         grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
       }
     }
+
+    /* Active Study Hub Styles */
+    .study-courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .study-course-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.25rem 1rem;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .study-course-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .study-course-card.active {
+      box-shadow: 0 4px 20px var(--primary-glow);
+      border-color: var(--primary);
+      background: rgba(99, 102, 241, 0.08);
+    }
+    .study-course-card .card-code {
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin-bottom: 0.25rem;
+    }
+    .study-course-card .card-name {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .study-panel-content {
+      animation: fadeIn 0.2s ease-in-out;
+    }
+    .quiz-option-btn {
+      width: 100%;
+      padding: 0.9rem 1.25rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+      margin-bottom: 0.6rem;
+    }
+    .quiz-option-btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateX(2px);
+    }
+    .quiz-option-btn:disabled {
+      cursor: default;
+    }
+    .quiz-option-btn.correct {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: var(--color-coding);
+      color: var(--color-coding);
+    }
+    .quiz-option-btn.wrong {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: #ef4444;
+      color: #ef4444;
+    }
+    .quiz-explanation-box {
+      margin-top: 1rem;
+      padding: 1rem 1.25rem;
+      background: rgba(255, 255, 255, 0.02);
+      border-left: 4px solid var(--primary);
+      border-radius: 0 12px 12px 0;
+      display: none;
+      animation: fadeIn 0.25s ease-out;
+    }
+    .flashcard-wrapper {
+      perspective: 1000px;
+      width: 100%;
+      max-width: 440px;
+      height: 250px;
+      margin: 1.5rem auto;
+      cursor: pointer;
+    }
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    .flashcard-wrapper.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+    .flashcard-front {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.95));
+      color: var(--text-main);
+    }
+    .flashcard-back {
+      background: linear-gradient(135deg, var(--primary-glow), rgba(15, 23, 42, 0.98));
+      color: var(--text-main);
+      transform: rotateY(180deg);
+    }
+    .sim-svg-wrapper {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0.75rem;
+    }
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .slider-group label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .slider-group input[type="range"] {
+      width: 100%;
+      accent-color: var(--primary);
+      background: rgba(255,255,255,0.05);
+      height: 4px;
+      border-radius: 2px;
+      outline: none;
+    }
   </style>
 </head>
 <body>
@@ -753,6 +905,10 @@
         <button class="nav-btn" onclick="switchTab('context-copier')">
           <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
           Antigravity Prompt
+        </button>
+        <button class="nav-btn" onclick="switchTab('active-study-hub')">
+          <svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm8 8.27l-8 4.36-8-4.36V9l8 4.36 8-4.36v2.27zM12 17c-2.76 0-5-2.24-5-5h2c0 1.66 1.34 3 3 3s3-1.34 3-3h2c0 2.76-2.24 5-5 5z"/></svg>
+          Active Study Hub
         </button>
       </div>
 
@@ -1053,6 +1209,332 @@ Planned Roadmap:
         </div>
       </section>
 
+      <!-- TAB 4: Active Study Hub -->
+      <section id="active-study-hub" class="tab-content">
+        <header>
+          <div class="header-title">
+            <h2>Active Study Hub</h2>
+            <p>Spaced repetition, active recall quizzes, and interactive concepts for engineering success</p>
+          </div>
+        </header>
+
+        <!-- Course Cards Selection -->
+        <div class="study-courses-grid" id="study-courses-grid">
+          <div class="study-course-card active" onclick="selectStudyCourse('MAT1341')">
+            <div class="card-code" style="color: var(--color-math);">MAT 1341</div>
+            <div class="card-name">Linear Algebra</div>
+          </div>
+          <div class="study-course-card" onclick="selectStudyCourse('MCG2130')">
+            <div class="card-code" style="color: var(--color-thermo);">MCG 2130</div>
+            <div class="card-name">Thermodynamics I</div>
+          </div>
+          <div class="study-course-card" onclick="selectStudyCourse('MCG2360')">
+            <div class="card-code" style="color: var(--color-materials);">MCG 2360</div>
+            <div class="card-name">Materials I</div>
+          </div>
+          <div class="study-course-card" onclick="selectStudyCourse('GNG1106')">
+            <div class="card-code" style="color: var(--color-coding);">GNG 1106</div>
+            <div class="card-name">Engineering Computation</div>
+          </div>
+          <div class="study-course-card" onclick="selectStudyCourse('GNG2101')">
+            <div class="card-code" style="color: var(--color-design);">GNG 2101</div>
+            <div class="card-name">Product Development</div>
+          </div>
+        </div>
+
+        <!-- Study Dashboard Panels -->
+        <div class="copier-card" style="display: grid; grid-template-columns: 200px 1fr; gap: 1.5rem; align-items: start;">
+          <!-- Study Sub Navigation -->
+          <div style="display: flex; flex-direction: column; gap: 0.50rem;">
+            <button class="nav-btn active" id="study-subtab-quiz" onclick="switchStudyActivity('quiz')">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+              Active Recall Quiz
+            </button>
+            <button class="nav-btn" id="study-subtab-flashcards" onclick="switchStudyActivity('flashcards')">
+              <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>
+              Spaced Flashcards
+            </button>
+            <button class="nav-btn" id="study-subtab-simulator" onclick="switchStudyActivity('simulator')">
+              <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4 6h-4v2h4v2h-4v2h4v2H9V7h6v2z"/></svg>
+              Visual Simulator
+            </button>
+          </div>
+
+          <!-- Main Panel Content -->
+          <div style="flex-grow: 1; border-left: 1px solid var(--border-color); padding-left: 1.5rem; min-height: 400px;">
+            
+            <!-- PANEL 1: Active Recall Quiz -->
+            <div id="study-panel-quiz" class="study-panel-content">
+              <h3 id="quiz-title" style="margin-bottom: 1rem; font-weight: 700; font-size: 1.15rem;">Question 1</h3>
+              <div id="quiz-question-text" style="font-size: 0.95rem; line-height: 1.5; margin-bottom: 1.5rem;">If matrix A is 3x3 and det(A) = 5, what is det(2A)?</div>
+              <div id="quiz-options-container">
+                <!-- Buttons will be rendered here dynamically -->
+              </div>
+              <div id="quiz-explanation" class="quiz-explanation-box">
+                <h4 style="font-weight: 700; font-size: 0.85rem; text-transform: uppercase; color: var(--primary); margin-bottom: 0.25rem;">Explanation</h4>
+                <p id="quiz-explanation-text" style="font-size: 0.85rem; line-height: 1.5; color: var(--text-muted);"></p>
+              </div>
+              <div style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+                <span id="quiz-score-display" style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">Score: 0 / 0</span>
+                <button class="copy-btn" id="quiz-next-btn" onclick="nextQuizQuestion()" style="padding: 0.5rem 1.25rem; font-size: 0.85rem; display: none;">Next Question ➔</button>
+              </div>
+            </div>
+
+            <!-- PANEL 2: Spaced Flashcards -->
+            <div id="study-panel-flashcards" class="study-panel-content" style="display: none;">
+              <h3 style="margin-bottom: 0.5rem; font-weight: 700; font-size: 1.15rem;">Spaced Repetition Deck</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Click the card to flip and reveal the answer. Score your recall to adjust future schedules.</p>
+              
+              <div class="flashcard-wrapper" onclick="this.classList.toggle('flipped')">
+                <div class="flashcard-inner">
+                  <div class="flashcard-front">
+                    <h4 style="font-size: 0.72rem; text-transform: uppercase; color: var(--primary); margin-bottom: 1rem; font-weight: 700;">Question</h4>
+                    <p id="flashcard-q-text" style="font-size: 1.05rem; font-weight: 600; line-height: 1.5;">What is a basis of a vector space V?</p>
+                  </div>
+                  <div class="flashcard-back">
+                    <h4 style="font-size: 0.72rem; text-transform: uppercase; color: var(--color-coding); margin-bottom: 1rem; font-weight: 700;">Answer / Explanation</h4>
+                    <p id="flashcard-a-text" style="font-size: 0.95rem; font-weight: 500; line-height: 1.5; text-align: left;">A set of vectors S in V is a basis if: 1) S is independent, and 2) S spans V.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: 1.5rem;">
+                <button class="control-btn" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2);" onclick="scoreFlashcard('hard')">Forgot / Hard</button>
+                <button class="control-btn" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2);" onclick="scoreFlashcard('medium')">Medium</button>
+                <button class="control-btn" style="background: rgba(16, 185, 129, 0.15); color: var(--color-coding); border: 1px solid rgba(16, 185, 129, 0.2);" onclick="scoreFlashcard('easy')">Easy / Mastered</button>
+              </div>
+            </div>
+
+            <!-- PANEL 3: Visual Simulator -->
+            <div id="study-panel-simulator" class="study-panel-content" style="display: none;">
+              
+              <!-- MAT 1341 Simulator -->
+              <div id="sim-MAT1341" class="simulator-wrapper" style="display: none;">
+                <h3 style="font-weight: 700; font-size: 1.15rem; margin-bottom: 0.5rem;">Linear Transformation Visualizer</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Enter matrix values or adjust rotation/scale sliders to transform vector v = [1, 1]ᵀ to Av.</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: center;">
+                  <div class="sim-svg-wrapper">
+                    <svg id="linalg-svg" width="300" height="300" viewBox="-150 -150 300 300">
+                      <!-- Grid lines -->
+                      <g stroke="#ffffff" stroke-opacity="0.05" stroke-width="1" id="linalg-grid"></g>
+                      <!-- Axes -->
+                      <line x1="-150" y1="0" x2="150" y2="0" stroke="#ffffff" stroke-opacity="0.2" stroke-width="1.5" />
+                      <line x1="0" y1="-150" x2="0" y2="150" stroke="#ffffff" stroke-opacity="0.2" stroke-width="1.5" />
+                      <!-- Arrow definitions -->
+                      <defs>
+                        <marker id="arrow-v" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                          <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8" />
+                        </marker>
+                        <marker id="arrow-av" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                          <path d="M 0 0 L 10 5 L 0 10 z" fill="#a855f7" />
+                        </marker>
+                      </defs>
+                      <!-- Transformed grid or shapes can go here -->
+                      <polygon id="linalg-transformed-box" points="-30,-30 30,-30 30,30 -30,30" fill="#a855f7" fill-opacity="0.1" stroke="#a855f7" stroke-dasharray="4,4" stroke-opacity="0.5" />
+                      <polygon id="linalg-base-box" points="-30,-30 30,-30 30,30 -30,30" fill="none" stroke="#38bdf8" stroke-dasharray="2,2" stroke-opacity="0.3" />
+                      <!-- Vectors -->
+                      <line x1="0" y1="0" x2="30" y2="-30" stroke="#38bdf8" stroke-width="3" marker-end="url(#arrow-v)" id="linalg-v-vector" />
+                      <line x1="0" y1="0" x2="30" y2="-30" stroke="#a855f7" stroke-width="3" marker-end="url(#arrow-av)" id="linalg-av-vector" />
+                    </svg>
+                  </div>
+                  
+                  <div>
+                    <div style="margin-bottom: 1rem;">
+                      <label style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Matrix A</label>
+                      <div style="display: grid; grid-template-columns: 60px 60px; gap: 0.5rem; margin-top: 0.25rem;">
+                        <input type="number" id="linalg-m00" value="1.0" step="0.1" style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); color: white; padding: 0.35rem; text-align: center; border-radius: 6px; font-weight:700;" onchange="updateLinalgMatrix()">
+                        <input type="number" id="linalg-m01" value="0.0" step="0.1" style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); color: white; padding: 0.35rem; text-align: center; border-radius: 6px; font-weight:700;" onchange="updateLinalgMatrix()">
+                        <input type="number" id="linalg-m10" value="0.0" step="0.1" style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); color: white; padding: 0.35rem; text-align: center; border-radius: 6px; font-weight:700;" onchange="updateLinalgMatrix()">
+                        <input type="number" id="linalg-m11" value="1.0" step="0.1" style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); color: white; padding: 0.35rem; text-align: center; border-radius: 6px; font-weight:700;" onchange="updateLinalgMatrix()">
+                      </div>
+                    </div>
+                    
+                    <div class="slider-group" style="margin-bottom: 1rem;">
+                      <label>Presets / Quick Transform</label>
+                      <select id="linalg-preset" onchange="applyLinalgPreset()" style="background: #1e293b; border: 1px solid var(--border-color); color: white; padding: 0.5rem; border-radius: 6px; font-weight:600;">
+                        <option value="identity">Identity (No change)</option>
+                        <option value="scale">Scale x2</option>
+                        <option value="shear">Shear x-direction</option>
+                        <option value="rotate">Rotation 45°</option>
+                        <option value="projection">Projection onto x-axis</option>
+                      </select>
+                    </div>
+                    
+                    <div style="font-size: 0.8rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 0.75rem; border-radius: 8px;">
+                      <div><strong>v:</strong> [1, 1]ᵀ</div>
+                      <div style="color: var(--color-math);"><strong>Av:</strong> <span id="linalg-av-val">[1.00, 1.00]ᵀ</span></div>
+                      <div style="margin-top: 0.25rem;"><strong>det(A):</strong> <span id="linalg-det-val">1.00</span></div>
+                      <div><strong>eigenvalues:</strong> <span id="linalg-eigen-val">λ₁ = 1, λ₂ = 1</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- MCG 2130 Simulator -->
+              <div id="sim-MCG2130" class="simulator-wrapper" style="display: none;">
+                <h3 style="font-weight: 700; font-size: 1.15rem; margin-bottom: 0.5rem;">Carnot Cycle Engine Simulator</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Interact with high (T_H) and low (T_L) temperature reservoirs to visualize thermodynamic cycle efficiency.</p>
+                
+                <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.5rem; align-items: center;">
+                  <div class="sim-svg-wrapper">
+                    <svg id="thermo-svg" width="300" height="240" viewBox="0 0 300 240">
+                      <!-- Axes -->
+                      <line x1="30" y1="20" x2="30" y2="210" stroke="#ffffff" stroke-opacity="0.3" stroke-width="1.5" />
+                      <line x1="30" y1="210" x2="280" y2="210" stroke="#ffffff" stroke-opacity="0.3" stroke-width="1.5" />
+                      <text x="25" y="15" fill="var(--text-muted)" font-size="9" font-weight="700">P (kPa)</text>
+                      <text x="260" y="225" fill="var(--text-muted)" font-size="9" font-weight="700">V (L)</text>
+                      
+                      <!-- Carnot Curves path -->
+                      <path id="thermo-cycle-path" d="" fill="rgba(249, 115, 22, 0.08)" stroke="var(--color-thermo)" stroke-width="2.5" />
+                      
+                      <!-- Carnot State points -->
+                      <circle id="thermo-p1" cx="0" cy="0" r="4" fill="#ef4444" />
+                      <circle id="thermo-p2" cx="0" cy="0" r="4" fill="#38bdf8" />
+                      <circle id="thermo-p3" cx="0" cy="0" r="4" fill="#10b981" />
+                      <circle id="thermo-p4" cx="0" cy="0" r="4" fill="#a855f7" />
+                      
+                      <!-- Label state points -->
+                      <text id="thermo-t1" x="0" y="0" fill="white" font-size="9" font-weight="700">1</text>
+                      <text id="thermo-t2" x="0" y="0" fill="white" font-size="9" font-weight="700">2</text>
+                      <text id="thermo-t3" x="0" y="0" fill="white" font-size="9" font-weight="700">3</text>
+                      <text id="thermo-t4" x="0" y="0" fill="white" font-size="9" font-weight="700">4</text>
+                    </svg>
+                  </div>
+                  
+                  <div>
+                    <div class="slider-group" style="margin-bottom: 1rem;">
+                      <div style="display:flex; justify-content:space-between;"><label>T_High (Source Temp)</label><span id="thermo-th-val" style="font-size:0.85rem; font-weight:700;">600 K</span></div>
+                      <input type="range" id="thermo-th-input" min="400" max="1000" value="600" oninput="updateThermoSim()">
+                    </div>
+                    
+                    <div class="slider-group" style="margin-bottom: 1rem;">
+                      <div style="display:flex; justify-content:space-between;"><label>T_Low (Sink Temp)</label><span id="thermo-tl-val" style="font-size:0.85rem; font-weight:700;">300 K</span></div>
+                      <input type="range" id="thermo-tl-input" min="200" max="380" value="300" oninput="updateThermoSim()">
+                    </div>
+
+                    <div class="slider-group" style="margin-bottom: 1rem;">
+                      <div style="display:flex; justify-content:space-between;"><label>Compression Ratio (r)</label><span id="thermo-r-val" style="font-size:0.85rem; font-weight:700;">4.0</span></div>
+                      <input type="range" id="thermo-r-input" min="2" max="8" step="0.5" value="4.0" oninput="updateThermoSim()">
+                    </div>
+                    
+                    <div style="font-size: 0.8rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 0.75rem; border-radius: 8px;">
+                      <div style="font-size: 0.95rem; font-weight: 800; color: var(--color-thermo); margin-bottom: 0.35rem;">
+                        Thermal Efficiency: <span id="thermo-eff-val">50.0%</span>
+                      </div>
+                      <div style="color: var(--text-muted);">Formula: η = 1 - T_L / T_H</div>
+                      <div style="margin-top: 0.25rem;"><strong>Work Output (W_net):</strong> <span id="thermo-work-val">1.25 kJ/kg</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- MCG 2360 Simulator -->
+              <div id="sim-MCG2360" class="simulator-wrapper" style="display: none;">
+                <h3 style="font-weight: 700; font-size: 1.15rem; margin-bottom: 0.5rem;">Crystal Lattice structure Visualizer</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Select a unit cell structure to see coordinate positions, coordination number (CN), and Atomic Packing Factor (APF).</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: center;">
+                  <div class="sim-svg-wrapper">
+                    <svg id="materials-svg" width="260" height="260" viewBox="0 0 260 260">
+                      <!-- Render 3D isometric crystal structures dynamically -->
+                      <g id="materials-lattice-group"></g>
+                    </svg>
+                  </div>
+                  
+                  <div>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
+                      <label style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Structure Type</label>
+                      <div style="display: flex; gap: 0.5rem;">
+                        <button class="control-btn active" id="materials-btn-bcc" onclick="selectMaterialsStructure('BCC')">BCC</button>
+                        <button class="control-btn" id="materials-btn-fcc" onclick="selectMaterialsStructure('FCC')">FCC</button>
+                        <button class="control-btn" id="materials-btn-sc" onclick="selectMaterialsStructure('SC')">SC</button>
+                      </div>
+                    </div>
+                    
+                    <div style="font-size: 0.8rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 0.75rem; border-radius: 8px;">
+                      <div style="font-size: 0.95rem; font-weight: 800; color: var(--color-materials); margin-bottom: 0.35rem;" id="materials-struct-title">
+                        Body-Centered Cubic (BCC)
+                      </div>
+                      <div><strong>Coordination Number (CN):</strong> <span id="materials-cn-val">8</span></div>
+                      <div><strong>Atoms per Unit Cell (n):</strong> <span id="materials-n-val">2</span></div>
+                      <div><strong>Atomic Packing Factor (APF):</strong> <span id="materials-apf-val">0.68</span></div>
+                      <div style="margin-top: 0.35rem; color: var(--text-muted); line-height: 1.4;">
+                        <strong>Lattice Parameter (a):</strong> <span id="materials-a-val">a = 4R / √3</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- GNG 1106 Simulator -->
+              <div id="sim-GNG1106" class="simulator-wrapper" style="display: none;">
+                <h3 style="font-weight: 700; font-size: 1.15rem; margin-bottom: 0.5rem;">C Code execution trace</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Click "Step" to run each line of the C script and watch the array indices and pointer values change in memory.</p>
+                
+                <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.5rem; align-items: start;">
+                  <div style="background: #090d16; border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; font-family: 'Courier New', Courier, monospace; font-size: 0.85rem;">
+                    <div id="c-line-0" style="padding: 2px 4px;">int main() {</div>
+                    <div id="c-line-1" style="padding: 2px 4px;">  int arr[4] = {10, 20, 30, 40};</div>
+                    <div id="c-line-2" style="padding: 2px 4px;">  int *ptr = arr;</div>
+                    <div id="c-line-3" style="padding: 2px 4px;">  int sum = 0;</div>
+                    <div id="c-line-4" style="padding: 2px 4px;">  for (int i = 0; i < 4; i++) {</div>
+                    <div id="c-line-5" style="padding: 2px 4px;">    sum += *(ptr + i);</div>
+                    <div id="c-line-6" style="padding: 2px 4px;">  }</div>
+                    <div id="c-line-7" style="padding: 2px 4px;">  return 0;</div>
+                    <div id="c-line-8" style="padding: 2px 4px;">}</div>
+                  </div>
+                  
+                  <div>
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                      <button class="copy-btn" onclick="stepCcode()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Step Forward</button>
+                      <button class="control-btn" onclick="resetCcode()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Reset</button>
+                    </div>
+                    
+                    <div style="font-size: 0.8rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 0.75rem; border-radius: 8px;">
+                      <div style="font-weight: 700; margin-bottom: 0.5rem; text-transform: uppercase; color: var(--color-coding);">Memory Variables</div>
+                      <div><strong>arr:</strong> [10, 20, 30, 40]</div>
+                      <div><strong>ptr:</strong> <span id="c-mem-ptr">arr[0] (addr: 0x7ffd..00)</span></div>
+                      <div><strong>i:</strong> <span id="c-mem-i">uninitialized</span></div>
+                      <div><strong>sum:</strong> <span id="c-mem-sum">uninitialized</span></div>
+                      <div style="margin-top: 0.5rem; color: var(--text-muted);" id="c-console-out">Console: Process initialized.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- GNG 2101 Simulator -->
+              <div id="sim-GNG2101" class="simulator-wrapper" style="display: none;">
+                <h3 style="font-weight: 700; font-size: 1.15rem; margin-bottom: 0.5rem;">Business Canvas Builder</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Interactive builder mapping out value propositions and customer metrics for an engineering product.</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
+                  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
+                    <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.75rem;">
+                      <div style="font-weight: 700; font-size: 0.75rem; text-transform: uppercase; color: var(--color-design); margin-bottom: 0.5rem;">1. Value Proposition</div>
+                      <textarea id="canvas-val-prop" style="width: 100%; height: 80px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 6px; padding: 0.5rem; color: white; font-size: 0.8rem; resize: none;" oninput="saveCanvasData()">A portable cooling device for laptops using thermoelectric cooling (Peltier tiles) that decreases surface temperature by 15°C.</textarea>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.75rem;">
+                      <div style="font-weight: 700; font-size: 0.75rem; text-transform: uppercase; color: var(--color-circuits); margin-bottom: 0.5rem;">2. Customer Segments</div>
+                      <textarea id="canvas-cust-seg" style="width: 100%; height: 80px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 6px; padding: 0.5rem; color: white; font-size: 0.8rem; resize: none;" oninput="saveCanvasData()">Engineering students compiling complex code, PC gamers, and remote design professionals.</textarea>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.75rem;">
+                      <div style="font-weight: 700; font-size: 0.75rem; text-transform: uppercase; color: var(--color-coding); margin-bottom: 0.5rem;">3. Key Channels</div>
+                      <textarea id="canvas-channels" style="width: 100%; height: 80px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 6px; padding: 0.5rem; color: white; font-size: 0.8rem; resize: none;" oninput="saveCanvasData()">Online store (Shopify), university hardware makerspaces, engineering conventions.</textarea>
+                    </div>
+                  </div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted);">
+                    * This template is stored locally. Edit details to frame your product concept for GNG 2101 pitch gates.
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </section>
+
     </main>
 
   </div>
@@ -1276,9 +1758,615 @@ Planned Roadmap:
       });
     }
 
+    // Active Study Hub variables
+    let activeStudyCourse = 'MAT1341';
+    let activeStudyActivity = 'quiz';
+    let currentQuizIndex = 0;
+    let quizScore = 0;
+    let quizTotal = 0;
+    let flashcardIndex = 0;
+    let currentCStep = -1;
+
+    // Switch active study course
+    function selectStudyCourse(courseId) {
+      activeStudyCourse = courseId;
+      document.querySelectorAll('.study-course-card').forEach(card => {
+        card.classList.remove('active');
+      });
+      
+      // Find the card that matches courseId and set it active
+      document.querySelectorAll('.study-course-card').forEach(card => {
+        if (card.getAttribute('onclick').includes(courseId)) {
+          card.classList.add('active');
+        }
+      });
+      
+      // Reset quiz and flashcards
+      currentQuizIndex = 0;
+      quizScore = 0;
+      quizTotal = 0;
+      flashcardIndex = 0;
+      
+      // Update displays
+      loadQuizQuestion();
+      loadFlashcard();
+      showActiveSimulator();
+    }
+
+    // Switch study activity sub-tab
+    function switchStudyActivity(activityId) {
+      activeStudyActivity = activityId;
+      document.querySelectorAll('#active-study-hub [id^="study-subtab-"]').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.getElementById('study-subtab-' + activityId).classList.add('active');
+      
+      document.querySelectorAll('.study-panel-content').forEach(panel => {
+        panel.style.display = 'none';
+      });
+      document.getElementById('study-panel-' + activityId).style.display = 'block';
+
+      if (activityId === 'simulator') {
+        showActiveSimulator();
+      }
+    }
+
+    // Show appropriate simulator
+    function showActiveSimulator() {
+      document.querySelectorAll('.simulator-wrapper').forEach(sim => {
+        sim.style.display = 'none';
+      });
+      const simEl = document.getElementById('sim-' + activeStudyCourse);
+      if (simEl) {
+        simEl.style.display = 'block';
+        if (activeStudyCourse === 'MAT1341') {
+          initLinalgSim();
+        } else if (activeStudyCourse === 'MCG2130') {
+          updateThermoSim();
+        } else if (activeStudyCourse === 'MCG2360') {
+          renderMaterialsStructure();
+        } else if (activeStudyCourse === 'GNG1106') {
+          resetCcode();
+        } else if (activeStudyCourse === 'GNG2101') {
+          loadCanvasData();
+        }
+      }
+    }
+
+    // Active Recall Quiz logic
+    function loadQuizQuestion() {
+      const db = window.studyData || {};
+      const course = db[activeStudyCourse] || { quizzes: [] };
+      const quizzes = course.quizzes;
+      
+      const textEl = document.getElementById('quiz-question-text');
+      const optionsContainer = document.getElementById('quiz-options-container');
+      const expBox = document.getElementById('quiz-explanation');
+      const nextBtn = document.getElementById('quiz-next-btn');
+      const scoreDisplay = document.getElementById('quiz-score-display');
+      
+      expBox.style.display = 'none';
+      nextBtn.style.display = 'none';
+      optionsContainer.innerHTML = '';
+      
+      scoreDisplay.innerText = `Score: ${quizScore} / ${quizTotal}`;
+      
+      if (!quizzes || quizzes.length === 0) {
+        document.getElementById('quiz-title').innerText = "Quiz Deck Empty";
+        textEl.innerText = "No quiz questions generated yet. Add custom lecture notes or run study_generator.py.";
+        return;
+      }
+      
+      if (currentQuizIndex >= quizzes.length) {
+        document.getElementById('quiz-title').innerText = "Quiz Completed!";
+        textEl.innerText = `Great job! You finished the active recall deck for ${activeStudyCourse}. Final score: ${quizScore}/${quizTotal}`;
+        const restartBtn = document.createElement('button');
+        restartBtn.className = "copy-btn";
+        restartBtn.innerText = "Restart Quiz";
+        restartBtn.onclick = () => {
+          currentQuizIndex = 0;
+          quizScore = 0;
+          quizTotal = 0;
+          loadQuizQuestion();
+        };
+        optionsContainer.appendChild(restartBtn);
+        return;
+      }
+      
+      const q = quizzes[currentQuizIndex];
+      document.getElementById('quiz-title').innerText = `Question ${currentQuizIndex + 1} of ${quizzes.length}`;
+      textEl.innerText = q.question;
+      
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = "quiz-option-btn";
+        btn.innerText = opt;
+        btn.onclick = () => checkQuizAnswer(idx, q.answer, q.explanation);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function checkQuizAnswer(selectedIdx, correctIdx, explanation) {
+      const container = document.getElementById('quiz-options-container');
+      const buttons = container.querySelectorAll('.quiz-option-btn');
+      
+      // Disable further clicks
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === correctIdx) {
+          btn.classList.add('correct');
+        } else if (idx === selectedIdx) {
+          btn.classList.add('wrong');
+        }
+      });
+      
+      quizTotal++;
+      if (selectedIdx === correctIdx) {
+        quizScore++;
+      }
+      
+      document.getElementById('quiz-score-display').innerText = `Score: ${quizScore} / ${quizTotal}`;
+      
+      // Show explanation
+      const expBox = document.getElementById('quiz-explanation');
+      document.getElementById('quiz-explanation-text').innerText = explanation;
+      expBox.style.display = 'block';
+      
+      // Show next button
+      document.getElementById('quiz-next-btn').style.display = 'block';
+    }
+
+    function nextQuizQuestion() {
+      currentQuizIndex++;
+      loadQuizQuestion();
+    }
+
+    // Spaced Repetition Flashcard logic
+    function loadFlashcard() {
+      const db = window.studyData || {};
+      const course = db[activeStudyCourse] || { flashcards: [] };
+      const cards = course.flashcards;
+      
+      const wrapper = document.querySelector('.flashcard-wrapper');
+      wrapper.classList.remove('flipped');
+      
+      if (!cards || cards.length === 0) {
+        document.getElementById('flashcard-q-text').innerText = "Flashcard Deck Empty";
+        document.getElementById('flashcard-a-text').innerText = "Add custom lecture notes or run study_generator.py.";
+        return;
+      }
+      
+      if (flashcardIndex >= cards.length) {
+        flashcardIndex = 0; // Wrap around
+      }
+      
+      const card = cards[flashcardIndex];
+      document.getElementById('flashcard-q-text').innerText = card.question;
+      document.getElementById('flashcard-a-text').innerText = card.answer;
+    }
+
+    function scoreFlashcard(rating) {
+      const db = window.studyData || {};
+      const course = db[activeStudyCourse] || { flashcards: [] };
+      const cards = course.flashcards;
+      
+      if (!cards || cards.length === 0) return;
+      
+      // Store card status in localStorage
+      const cardKey = `fc_${activeStudyCourse}_${flashcardIndex}`;
+      localStorage.setItem(cardKey, JSON.stringify({
+        rating: rating,
+        lastReviewed: Date.now()
+      }));
+      
+      // Advance to next card
+      flashcardIndex = (flashcardIndex + 1) % cards.length;
+      loadFlashcard();
+    }
+
+    // ==========================================
+    // SIMULATOR 1: MAT 1341 (Linear Algebra)
+    // ==========================================
+    function initLinalgSim() {
+      // Draw static grid lines on linalg-grid
+      const gridG = document.getElementById('linalg-grid');
+      gridG.innerHTML = '';
+      for (let i = -150; i <= 150; i += 30) {
+        if (i === 0) continue;
+        // Horizontal
+        const hLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        hLine.setAttribute('x1', '-150');
+        hLine.setAttribute('y1', i);
+        hLine.setAttribute('x2', '150');
+        hLine.setAttribute('y2', i);
+        gridG.appendChild(hLine);
+        // Vertical
+        const vLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        vLine.setAttribute('x1', i);
+        vLine.setAttribute('y1', '-150');
+        vLine.setAttribute('x2', i);
+        vLine.setAttribute('y2', '150');
+        gridG.appendChild(vLine);
+      }
+      updateLinalgMatrix();
+    }
+
+    function updateLinalgMatrix() {
+      const m00 = parseFloat(document.getElementById('linalg-m00').value) || 0;
+      const m01 = parseFloat(document.getElementById('linalg-m01').value) || 0;
+      const m10 = parseFloat(document.getElementById('linalg-m10').value) || 0;
+      const m11 = parseFloat(document.getElementById('linalg-m11').value) || 0;
+      
+      // Calculate determinant
+      const det = (m00 * m11) - (m01 * m10);
+      document.getElementById('linalg-det-val').innerText = det.toFixed(2);
+      
+      // Base vector v = [1, 1]ᵀ, which in SVG scales to [30, -30] (y-axis is flipped in SVG)
+      const vx = 30;
+      const vy = -30;
+      
+      // Transform vector Av (scaled coordinates)
+      const ax_cart = m00 * 1 + m01 * 1;
+      const ay_cart = m10 * 1 + m11 * 1;
+      const avx = ax_cart * 30;
+      const avy = -ay_cart * 30;
+      
+      // Update vectors in SVG
+      document.getElementById('linalg-av-vector').setAttribute('x2', avx);
+      document.getElementById('linalg-av-vector').setAttribute('y2', avy);
+      document.getElementById('linalg-av-val').innerText = `[${ax_cart.toFixed(2)}, ${ay_cart.toFixed(2)}]ᵀ`;
+      
+      // Update transformed grid box
+      const corners = [
+        [-1, -1], [1, -1], [1, 1], [-1, 1]
+      ];
+      const transCorners = corners.map(c => {
+        const cx = (m00 * c[0] + m01 * c[1]) * 30;
+        const cy = -(m10 * c[0] + m11 * c[1]) * 30;
+        return `${cx},${cy}`;
+      });
+      document.getElementById('linalg-transformed-box').setAttribute('points', transCorners.join(' '));
+      
+      // Simple eigenvalue calculation for 2x2 matrix: λ² - trace*λ + det = 0
+      const trace = m00 + m11;
+      const discriminant = (trace * trace) - 4 * det;
+      let eigenStr = "None (Complex)";
+      if (discriminant >= 0) {
+        const l1 = (trace + Math.sqrt(discriminant)) / 2;
+        const l2 = (trace - Math.sqrt(discriminant)) / 2;
+        eigenStr = `λ₁ = ${l1.toFixed(2)}, λ₂ = ${l2.toFixed(2)}`;
+      }
+      document.getElementById('linalg-eigen-val').innerText = eigenStr;
+    }
+
+    function applyLinalgPreset() {
+      const preset = document.getElementById('linalg-preset').value;
+      if (preset === 'identity') {
+        setLinalgMatrix(1, 0, 0, 1);
+      } else if (preset === 'scale') {
+        setLinalgMatrix(2, 0, 0, 2);
+      } else if (preset === 'shear') {
+        setLinalgMatrix(1, 1.5, 0, 1);
+      } else if (preset === 'rotate') {
+        const rad = 45 * Math.PI / 180;
+        setLinalgMatrix(Math.cos(rad), -Math.sin(rad), Math.sin(rad), Math.cos(rad));
+      } else if (preset === 'projection') {
+        setLinalgMatrix(1, 0, 0, 0);
+      }
+    }
+
+    function setLinalgMatrix(m00, m01, m10, m11) {
+      document.getElementById('linalg-m00').value = m00.toFixed(1);
+      document.getElementById('linalg-m01').value = m01.toFixed(1);
+      document.getElementById('linalg-m10').value = m10.toFixed(1);
+      document.getElementById('linalg-m11').value = m11.toFixed(1);
+      updateLinalgMatrix();
+    }
+
+    // ==========================================
+    // SIMULATOR 2: MCG 2130 (Thermodynamics I)
+    // ==========================================
+    function updateThermoSim() {
+      const Th = parseFloat(document.getElementById('thermo-th-input').value);
+      const Tl = parseFloat(document.getElementById('thermo-tl-input').value);
+      const r = parseFloat(document.getElementById('thermo-r-input').value);
+      
+      document.getElementById('thermo-th-val').innerText = `${Th} K`;
+      document.getElementById('thermo-tl-val').innerText = `${Tl} K`;
+      document.getElementById('thermo-r-val').innerText = r.toFixed(1);
+      
+      // Carnot Efficiency: η = 1 - T_L / T_H
+      const eff = (1 - Tl / Th) * 100;
+      document.getElementById('thermo-eff-val').innerText = `${eff.toFixed(1)}%`;
+      
+      const R = 0.287; // kJ/kg.K for air
+      const work = R * (Th - Tl) * Math.log(r);
+      document.getElementById('thermo-work-val').innerText = `${work.toFixed(2)} kJ/kg`;
+      
+      // Point 1 (Isothermal expansion starts at V1, P1)
+      const v1 = 50;
+      const p1 = 40 + (Th / 3);
+      
+      // Point 2
+      const v2 = v1 * 1.5;
+      const p2 = p1 * (v1 / v2);
+      
+      // Point 3
+      const v3 = v2 * Math.pow(Th/Tl, 2.5);
+      const p3 = p2 * Math.pow(v2 / v3, 1.4);
+      
+      // Point 4
+      const v4 = v3 / 1.5;
+      const p4 = p3 * (v3 / v4);
+      
+      const scaleV = (v) => 30 + (v / 400) * 230;
+      const scaleP = (p) => 210 - (p / 400) * 170;
+      
+      const pt1 = [scaleV(v1), scaleP(p1)];
+      const pt2 = [scaleV(v2), scaleP(p2)];
+      const pt3 = [scaleV(v3), scaleP(p3)];
+      const pt4 = [scaleV(v4), scaleP(p4)];
+      
+      const pathD = `M ${pt1[0]} ${pt1[1]} 
+                     Q ${(pt1[0]+pt2[0])/2} ${(pt1[1]+pt2[1])/2 - 5} ${pt2[0]} ${pt2[1]}
+                     Q ${(pt2[0]+pt3[0])/2} ${(pt2[1]+pt3[1])/2 - 8} ${pt3[0]} ${pt3[1]}
+                     Q ${(pt3[0]+pt4[0])/2} ${(pt4[1]+pt4[1])/2 + 5} ${pt4[0]} ${pt4[1]}
+                     Q ${(pt4[0]+pt1[0])/2} ${(pt4[1]+pt1[1])/2 + 8} ${pt1[0]} ${pt1[1]} Z`;
+                     
+      document.getElementById('thermo-cycle-path').setAttribute('d', pathD);
+      
+      const setPt = (id, labelId, pt) => {
+        const circle = document.getElementById(id);
+        const text = document.getElementById(labelId);
+        circle.setAttribute('cx', pt[0]);
+        circle.setAttribute('cy', pt[1]);
+        text.setAttribute('x', pt[0] + 8);
+        text.setAttribute('y', pt[1] - 4);
+      };
+      
+      setPt('thermo-p1', 'thermo-t1', pt1);
+      setPt('thermo-p2', 'thermo-t2', pt2);
+      setPt('thermo-p3', 'thermo-t3', pt3);
+      setPt('thermo-p4', 'thermo-t4', pt4);
+    }
+
+    // ==========================================
+    // SIMULATOR 3: MCG 2360 (Engineering Materials I)
+    // ==========================================
+    let activeMaterialsStruct = 'BCC';
+    
+    function selectMaterialsStructure(struct) {
+      activeMaterialsStruct = struct;
+      document.getElementById('materials-btn-bcc').classList.toggle('active', struct === 'BCC');
+      document.getElementById('materials-btn-fcc').classList.toggle('active', struct === 'FCC');
+      document.getElementById('materials-btn-sc').classList.toggle('active', struct === 'SC');
+      renderMaterialsStructure();
+    }
+
+    function renderMaterialsStructure() {
+      const g = document.getElementById('materials-lattice-group');
+      g.innerHTML = '';
+      
+      const originX = 130;
+      const originY = 150;
+      const size = 80;
+      
+      const isoProj = (x, y, z) => {
+        const px = (x - y) * size * 0.866;
+        const py = (x + y) * size * 0.5 - z * size;
+        return [originX + px, originY + py];
+      };
+      
+      const drawWire = (pA, pB) => {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', pA[0]);
+        line.setAttribute('y1', pA[1]);
+        line.setAttribute('x2', pB[0]);
+        line.setAttribute('y2', pB[1]);
+        line.setAttribute('stroke', '#ffffff');
+        line.setAttribute('stroke-opacity', '0.15');
+        line.setAttribute('stroke-width', '1.5');
+        g.appendChild(line);
+      };
+      
+      const pts = {};
+      for (let x of [0, 1]) {
+        for (let y of [0, 1]) {
+          for (let z of [0, 1]) {
+            pts[`${x}${y}${z}`] = isoProj(x, y, z);
+          }
+        }
+      }
+      
+      drawWire(pts['000'], pts['100']);
+      drawWire(pts['000'], pts['010']);
+      drawWire(pts['000'], pts['001']);
+      drawWire(pts['100'], pts['110']);
+      drawWire(pts['100'], pts['101']);
+      drawWire(pts['010'], pts['110']);
+      drawWire(pts['010'], pts['011']);
+      drawWire(pts['001'], pts['101']);
+      drawWire(pts['001'], pts['011']);
+      drawWire(pts['111'], pts['110']);
+      drawWire(pts['111'], pts['101']);
+      drawWire(pts['111'], pts['011']);
+      
+      const drawAtom = (x, y, z, color, sizeMultiplier=1) => {
+        const pt = isoProj(x, y, z);
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', pt[0]);
+        circle.setAttribute('cy', pt[1]);
+        circle.setAttribute('r', 10 * sizeMultiplier);
+        circle.setAttribute('fill', color);
+        circle.setAttribute('fill-opacity', '0.85');
+        circle.setAttribute('stroke', '#ffffff');
+        circle.setAttribute('stroke-width', '1.5');
+        g.appendChild(circle);
+      };
+
+      const cornerColor = 'var(--color-materials)';
+      for (let x of [0, 1]) {
+        for (let y of [0, 1]) {
+          for (let z of [0, 1]) {
+            drawAtom(x, y, z, cornerColor, 0.9);
+          }
+        }
+      }
+      
+      if (activeMaterialsStruct === 'BCC') {
+        drawAtom(0.5, 0.5, 0.5, '#ef4444', 1.2);
+        
+        document.getElementById('materials-struct-title').innerText = "Body-Centered Cubic (BCC)";
+        document.getElementById('materials-cn-val').innerText = "8";
+        document.getElementById('materials-n-val').innerText = "2";
+        document.getElementById('materials-apf-val').innerText = "0.68";
+        document.getElementById('materials-a-val').innerText = "a = 4R / √3";
+      } else if (activeMaterialsStruct === 'FCC') {
+        const faceColor = '#a855f7';
+        drawAtom(0.5, 0.5, 0, faceColor, 1.0);
+        drawAtom(0.5, 0.5, 1, faceColor, 1.0);
+        drawAtom(0.5, 0, 0.5, faceColor, 1.0);
+        drawAtom(0.5, 1, 0.5, faceColor, 1.0);
+        drawAtom(0, 0.5, 0.5, faceColor, 1.0);
+        drawAtom(1, 0.5, 0.5, faceColor, 1.0);
+        
+        document.getElementById('materials-struct-title').innerText = "Face-Centered Cubic (FCC)";
+        document.getElementById('materials-cn-val').innerText = "12";
+        document.getElementById('materials-n-val').innerText = "4";
+        document.getElementById('materials-apf-val').innerText = "0.74";
+        document.getElementById('materials-a-val').innerText = "a = 2R * √2";
+      } else if (activeMaterialsStruct === 'SC') {
+        document.getElementById('materials-struct-title').innerText = "Simple Cubic (SC)";
+        document.getElementById('materials-cn-val').innerText = "6";
+        document.getElementById('materials-n-val').innerText = "1";
+        document.getElementById('materials-apf-val').innerText = "0.52";
+        document.getElementById('materials-a-val').innerText = "a = 2R";
+      }
+    }
+
+    // ==========================================
+    // SIMULATOR 4: GNG 1106 (Engineering Computation)
+    // ==========================================
+    function resetCcode() {
+      currentCStep = -1;
+      document.querySelectorAll('[id^="c-line-"]').forEach(line => {
+        line.style.background = 'none';
+      });
+      document.getElementById('c-mem-ptr').innerText = 'uninitialized';
+      document.getElementById('c-mem-i').innerText = 'uninitialized';
+      document.getElementById('c-mem-sum').innerText = 'uninitialized';
+      document.getElementById('c-console-out').innerText = 'Console: Process initialized. Click step to start.';
+    }
+
+    function stepCcode() {
+      currentCStep++;
+      if (currentCStep > 8) {
+        currentCStep = 0;
+      }
+      
+      document.querySelectorAll('[id^="c-line-"]').forEach(line => {
+        line.style.background = 'none';
+      });
+      
+      const activeLine = document.getElementById('c-line-' + currentCStep);
+      if (activeLine) {
+        activeLine.style.background = 'rgba(16, 185, 129, 0.2)';
+      }
+      
+      const consoleOut = document.getElementById('c-console-out');
+      
+      switch(currentCStep) {
+        case 0:
+          consoleOut.innerText = "Console: Entering main().";
+          break;
+        case 1:
+          consoleOut.innerText = "Console: Array 'arr' allocated on stack.";
+          break;
+        case 2:
+          document.getElementById('c-mem-ptr').innerText = 'arr[0] (val: 10, addr: 0x7ffe00)';
+          consoleOut.innerText = "Console: Pointer 'ptr' initialized to base address of 'arr'.";
+          break;
+        case 3:
+          document.getElementById('c-mem-sum').innerText = '0';
+          consoleOut.innerText = "Console: Variable 'sum' initialized to 0.";
+          break;
+        case 4:
+          document.getElementById('c-mem-i').innerText = '0';
+          consoleOut.innerText = "Console: Loop index 'i' set to 0.";
+          break;
+        case 5:
+          const sumVal = parseInt(document.getElementById('c-mem-sum').innerText) || 0;
+          const iVal = parseInt(document.getElementById('c-mem-i').innerText) || 0;
+          const arrayVals = [10, 20, 30, 40];
+          const termVal = arrayVals[iVal];
+          
+          document.getElementById('c-mem-sum').innerText = sumVal + termVal;
+          document.getElementById('c-mem-ptr').innerText = `arr[${iVal}] (val: ${termVal}, addr: 0x7ffe0${iVal*4})`;
+          consoleOut.innerText = `Console: Added value *(ptr + ${iVal}) = ${termVal} to sum.`;
+          break;
+        case 6:
+          let curI = parseInt(document.getElementById('c-mem-i').innerText);
+          if (curI < 3) {
+            curI++;
+            document.getElementById('c-mem-i').innerText = curI;
+            consoleOut.innerText = `Console: Incremented 'i' to ${curI}. Repeating loop.`;
+            currentCStep = 4;
+          } else {
+            consoleOut.innerText = "Console: i = 4. Loop condition (i < 4) failed. Exiting loop.";
+          }
+          break;
+        case 7:
+          consoleOut.innerText = "Console: return 0. Process exiting.";
+          break;
+        case 8:
+          consoleOut.innerText = "Console: Execution complete. Click step to restart.";
+          break;
+      }
+    }
+
+    // ==========================================
+    // SIMULATOR 5: GNG 2101 (Product Development)
+    // ==========================================
+    function saveCanvasData() {
+      const valProp = document.getElementById('canvas-val-prop').value;
+      const custSeg = document.getElementById('canvas-cust-seg').value;
+      const channels = document.getElementById('canvas-channels').value;
+      
+      const canvasData = { valProp, custSeg, channels };
+      localStorage.setItem('gng2101_canvas', JSON.stringify(canvasData));
+    }
+
+    function loadCanvasData() {
+      const dataStr = localStorage.getItem('gng2101_canvas');
+      if (dataStr) {
+        const data = JSON.parse(dataStr);
+        document.getElementById('canvas-val-prop').value = data.valProp || '';
+        document.getElementById('canvas-cust-seg').value = data.custSeg || '';
+        document.getElementById('canvas-channels').value = data.channels || '';
+      }
+    }
+
+    // Tab switching override to support active study hub tab
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.getElementById(tabId).classList.add('active');
+      event.currentTarget.classList.add('active');
+      
+      if (tabId === 'active-study-hub') {
+        selectStudyCourse(activeStudyCourse);
+      }
+    }
+
     // Init
     window.onload = () => {
       renderCalendar();
+      loadQuizQuestion();
+      loadFlashcard();
     };
   </script>
 </body>
